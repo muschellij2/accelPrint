@@ -34,8 +34,23 @@ pak::pak("lilykoff/accelPrint")
 
 This is a basic example which shows you how to solve a common problem:
 
-```{r example, eval = FALSE}
+```{r example}
 library(accelPrint)
-## basic example code
+library(ggplot2)
+# load example data 
+data(raw_accel)
+# run the get walking function
+walking_bouts = accelPrint::get_walking(raw_accel, parallel = TRUE)
+head(walking_bouts) 
+
+
+# run the get grid cells function on the walking bouts
+# specify lags of 0.15, 0.30, 0.45 seconds and grid cell size of 0.25g 
+fingerprint_predictors = compute_grid_cells(walking_bouts, 
+                                            lags = c(0.15, 0.30, 0.45), 
+                                            cell_size = 0.25,
+                                            max_vm = 3)
+
+head(fingerprint_predictors) 
 ```
 

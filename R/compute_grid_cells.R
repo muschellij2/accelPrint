@@ -32,7 +32,6 @@ compute_grid_cells = function(data, lags, cell_size = 0.25, max_vm = 3, sample_r
     "z",
     "second",
     "vm",
-    "second",
     "cut_sig",
     "cut_lagsig",
     "cell"))
