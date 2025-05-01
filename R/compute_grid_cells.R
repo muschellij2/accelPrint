@@ -14,7 +14,13 @@
 #' @param sample_rate optional specification of sample rate (samples per sec), if not specified will be inferred
 #' @return A data frame of predictors derived from the grid
 #' @export
+#' @examples
+#' # Load example walking bout data
+#' data(walking_data)
 #'
+#' # Run the function
+#' res <- compute_grid_cells(walking_data, lags = c(0.15, 0.30, 0.45), cell_size = 0.25, max_vm = 3)
+#' head(res)
 compute_grid_cells = function(data, lags, cell_size = 0.25, max_vm = 3, sample_rate = NULL) {
 
   time = x = y = z = second = vm = NULL

@@ -30,3 +30,11 @@ A data frame of predictors derived from the grid
 This function processes raw accelerometry data and creates predictors
 using a grid-based approach with optional lagging.
 }
+\examples{
+# Load example walking bout data
+data(walking_data)
+
+# Run the function
+res <- compute_grid_cells(walking_data, lags = c(0.15, 0.30, 0.45), cell_size = 0.25, max_vm = 3)
+head(res)
+}

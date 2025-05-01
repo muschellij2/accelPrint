@@ -60,3 +60,11 @@ A data frame of sub-second data from walking bouts only
 This function processes raw accelerometry data and creates predictors
 using a grid-based approach with optional lagging.
 }
+\examples{
+# Load example data
+data(raw_accel)
+
+# Run the function
+res <- get_walking(raw_accel, parallel = TRUE)
+head(res)
+}

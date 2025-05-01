@@ -23,7 +23,13 @@
 #' @param mean_abs_diff_dur_max ADEPT parameter mean_abs_diff_dur_MAX, default 0.3
 #' @return A data frame of sub-second data from walking bouts only
 #' @export
+#' @examples
+#' # Load example data
+#' data(raw_accel)
 #'
+#' # Run the function
+#' res <- get_walking(raw_accel, parallel = TRUE)
+#' head(res)
 get_walking = function(data,
                        sample_rate = NULL,
                        template_list = NULL,
