@@ -4,10 +4,7 @@
 #' using a grid-based approach with optional lagging.
 #'
 #' @importFrom dplyr mutate select ungroup group_by count sym n filter count pull lag
-#' @importFrom lubridate floor_date
-#' @importFrom assertthat assert_that
 #' @importFrom tidyr drop_na pivot_wider
-#' @importFrom stats time
 #' @importFrom purrr map_dfr
 #'
 #' @param data A data frame with accelerometry values (e.g., x, y, z, and time)
@@ -20,17 +17,19 @@
 #'
 compute_grid_cells = function(data, lags, cell_size = 0.25, max_vm = 3, sample_rate = NULL) {
 
-  x = y = z = second = vm = NULL
+  time = x = y = z = second = vm = NULL
   second = cut_sig = cut_lagsig = cell = NULL
-  rm(list = c("x",
-              "y",
-              "z",
-              "second",
-              "vm",
-              "second",
-              "cut_sig",
-              "cut_lagsig",
-              "cell"))
+  rm(list = c(
+    "time",
+    "x",
+    "y",
+    "z",
+    "second",
+    "vm",
+    "second",
+    "cut_sig",
+    "cut_lagsig",
+    "cell"))
 
   # check that data is a data frame
   assertthat::assert_that(
@@ -129,17 +128,17 @@ compute_grid_cells = function(data, lags, cell_size = 0.25, max_vm = 3, sample_r
 
   result =
     purrr::map_dfr(.x = lags_samples,
-            .f = function(lag){
-              data %>%
-                dplyr::group_by(second) %>%
-                dplyr::mutate(cut_lagsig = dplyr::lag(cut_sig, n = lag)) %>%   # for each second, calculate vm and lagged vm
-                dplyr::ungroup() %>%
-                tidyr::drop_na() %>% # count # points in each "grid cell"
-                dplyr::count(second, cut_sig, cut_lagsig, .drop = FALSE) %>%
-                dplyr::mutate(cell = paste0(cut_sig, "_", cut_lagsig, "_", lag)) %>%
-                dplyr::select(n, second, cell)
+                   .f = function(lag){
+                     data %>%
+                       dplyr::group_by(second) %>%
+                       dplyr::mutate(cut_lagsig = dplyr::lag(cut_sig, n = lag)) %>%   # for each second, calculate vm and lagged vm
+                       dplyr::ungroup() %>%
+                       tidyr::drop_na() %>% # count # points in each "grid cell"
+                       dplyr::count(second, cut_sig, cut_lagsig, .drop = FALSE) %>%
+                       dplyr::mutate(cell = paste0(cut_sig, "_", cut_lagsig, "_", lag)) %>%
+                       dplyr::select(n, second, cell)
 
-            })
+                   })
   res =
     result %>%
     tidyr::pivot_wider(names_from = cell, values_from = n)

@@ -4,12 +4,17 @@
 \name{accelPrint-package}
 \alias{accelPrint}
 \alias{accelPrint-package}
-\title{accelPrint: What the Package Does (One Line, Title Case)}
+\title{accelPrint: Fingerprinting with Gait Characteristics to Identify Participants}
 \description{
-What the package does (one paragraph).
+Creates a waking "fingerprint" that can identify a participant, taking in raw, sub-second level data, defining walking, and then converting that to a fingerprint.
 }
 \author{
-\strong{Maintainer}: First Last \email{first.last@example.com}
+\strong{Maintainer}: Lily Koffman \email{lkoffma2@jhmi.edu}
+
+Authors:
+\itemize{
+  \item John Muschelli \email{muschellij2@gmail.com}
+}
 
 }
 \keyword{internal}

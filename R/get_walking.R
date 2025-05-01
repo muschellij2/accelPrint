@@ -4,13 +4,6 @@
 #' using a grid-based approach with optional lagging.
 #'
 #' @importFrom dplyr mutate select ungroup group_by count sym n filter count lag rename join_by inner_join
-#' @importFrom lubridate floor_date
-#' @importFrom assertthat assert_that
-#' @importFrom stats time
-#' @importFrom adept segmentWalking
-#' @importFrom adeptdata stride_template
-#' @importFrom parallelly availableCores
-#' @importFrom data.table rleid
 #'
 #' @param data A data frame with accelerometry values (e.g., x, y, z, and time)
 #' @param sample_rate optional specification of sample rate (samples per sec), if not specified will be inferred
@@ -48,19 +41,22 @@ get_walking = function(data,
                        mean_abs_diff_dur_max = 0.3
 
 ) {
-  second = x = y = z = is_walking_i = NULL
+  time = rleid = second = x = y = z = is_walking_i = NULL
   T_i = tau_i = steps = timediff = ltwosec = n_seconds = NULL
-  rm(list = c("second",
-              "x",
-              "y",
-              "z",
-              "is_walking_i",
-              "T_i",
-              "tau_i",
-              "steps",
-              "timediff",
-              "ltwosec",
-              "n_seconds"))
+  rm(list = c(
+    "time",
+    "second",
+    "x",
+    "y",
+    "z",
+    "is_walking_i",
+    "T_i",
+    "tau_i",
+    "steps",
+    "timediff",
+    "ltwosec",
+    "n_seconds",
+    "rleid"))
   # check that data is a data frame
   assertthat::assert_that(
     is.data.frame(data),
@@ -160,39 +156,39 @@ get_walking = function(data,
   }
 
   steps_bysecond = data %>%
-      dplyr::mutate(tau_i = dplyr::row_number()) %>%
-      dplyr::left_join(step_result, by = dplyr::join_by(tau_i)) %>%
-      dplyr::mutate(
-        steps = ifelse(is.na(steps), 0, steps),
-        second = lubridate::floor_date(time, unit = "seconds")) %>%
-      dplyr::group_by(second) %>%
-      dplyr::summarize(steps = sum(steps), .groups = "drop")
+    dplyr::mutate(tau_i = dplyr::row_number()) %>%
+    dplyr::left_join(step_result, by = dplyr::join_by(tau_i)) %>%
+    dplyr::mutate(
+      steps = ifelse(is.na(steps), 0, steps),
+      second = lubridate::floor_date(time, unit = "seconds")) %>%
+    dplyr::group_by(second) %>%
+    dplyr::summarize(steps = sum(steps), .groups = "drop")
 
-    bouts = steps_bysecond %>%
-      dplyr::select(second) %>%
-      dplyr::distinct() %>%
-      dplyr::mutate(timediff = as.numeric(difftime(second, dplyr::lag(second, n = 1), units = "secs")),
-             ltwosec = (timediff <= 2)*1,
-             rleid = data.table::rleid(ltwosec)) %>%
-      dplyr::filter(ltwosec == 1) %>%
-      dplyr::group_by(rleid) %>%
-      dplyr::mutate(n_seconds = dplyr::n(),
-             start = min(second),
-             end = max(second)) %>%
-      dplyr::ungroup() %>%
-      dplyr::filter(n_seconds >= 10) %>%
-      dplyr::select(second, bout_seconds = n_seconds)
+  bouts = steps_bysecond %>%
+    dplyr::select(second) %>%
+    dplyr::distinct() %>%
+    dplyr::mutate(timediff = as.numeric(difftime(second, dplyr::lag(second, n = 1), units = "secs")),
+                  ltwosec = (timediff <= 2)*1,
+                  rleid = data.table::rleid(ltwosec)) %>%
+    dplyr::filter(ltwosec == 1) %>%
+    dplyr::group_by(rleid) %>%
+    dplyr::mutate(n_seconds = dplyr::n(),
+                  start = min(second),
+                  end = max(second)) %>%
+    dplyr::ungroup() %>%
+    dplyr::filter(n_seconds >= 10) %>%
+    dplyr::select(second, bout_seconds = n_seconds)
 
-    if(nrow(bouts) ==0){
-      message("No bouts of at least 10s in length detected")
-      return(data.frame())
-    }
+  if(nrow(bouts) ==0){
+    message("No bouts of at least 10s in length detected")
+    return(data.frame())
+  }
 
 
-    subsecond_return =
-      data %>%
-      dplyr::inner_join(bouts, by = dplyr::join_by("second"))
-    return(subsecond_return)
+  subsecond_return =
+    data %>%
+    dplyr::inner_join(bouts, by = dplyr::join_by("second"))
+  return(subsecond_return)
 
 
 

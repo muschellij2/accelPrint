@@ -1,9 +1,14 @@
 Package: accelPrint
-Title: What the Package Does (One Line, Title Case)
+Title: Fingerprinting with Gait Characteristics to Identify Participants
 Version: 0.0.0.9000
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
+    c(
+    person("Lily", "Koffman", , "lkoffma2@jhmi.edu", role = c("aut", "cre")),
+    person("John", "Muschelli", , "muschellij2@gmail.com", role = c("aut"))
+    )
+Description: Creates a waking "fingerprint" that can identify a participant,
+    taking in raw, sub-second level data, defining walking, and then
+    converting that to a fingerprint.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
