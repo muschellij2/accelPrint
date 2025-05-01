@@ -48,6 +48,19 @@ get_walking = function(data,
                        mean_abs_diff_dur_max = 0.3
 
 ) {
+  second = x = y = z = is_walking_i = NULL
+  T_i = tau_i = steps = timediff = ltwosec = n_seconds = NULL
+  rm(list = c("second",
+              "x",
+              "y",
+              "z",
+              "is_walking_i",
+              "T_i",
+              "tau_i",
+              "steps",
+              "timediff",
+              "ltwosec",
+              "n_seconds"))
   # check that data is a data frame
   assertthat::assert_that(
     is.data.frame(data),

@@ -20,6 +20,18 @@
 #'
 compute_grid_cells = function(data, lags, cell_size = 0.25, max_vm = 3, sample_rate = NULL) {
 
+  x = y = z = second = vm = NULL
+  second = cut_sig = cut_lagsig = cell = NULL
+  rm(list = c("x",
+              "y",
+              "z",
+              "second",
+              "vm",
+              "second",
+              "cut_sig",
+              "cut_lagsig",
+              "cell"))
+
   # check that data is a data frame
   assertthat::assert_that(
     is.data.frame(data),
