@@ -1,4 +1,3 @@
-# devtools::load_all()
 testthat::test_that("compute_grid_cells returns correct structure", {
   # Simulate 2 seconds of 80Hz data
   set.seed(123)
@@ -14,5 +13,5 @@ testthat::test_that("compute_grid_cells returns correct structure", {
 
   expect_s3_class(result, "data.frame")
   expect_true("second" %in% names(result))
-  expect_gt(ncol(result), 1)
+  expect_gt(ncol(result), 3)
 })

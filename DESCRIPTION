@@ -15,9 +15,13 @@ Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Imports: 
+    adept,
+    adeptdata,
     assertthat,
+    data.table,
     dplyr,
     lubridate,
     magrittr,
+    parallelly,
     purrr,
     tidyr

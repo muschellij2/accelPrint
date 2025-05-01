@@ -5,17 +5,17 @@
 \title{Generate Grid Cell Predictors from Accelerometry Data}
 \usage{
 compute_grid_cells(
-  lags = 0.15,
   data,
+  lags,
   cell_size = 0.25,
   max_vm = 3,
   sample_rate = NULL
 )
 }
 \arguments{
-\item{lags}{vector of lag values in seconds}
-
 \item{data}{A data frame with accelerometry values (e.g., x, y, z, and time)}
+
+\item{lags}{vector of lag values in seconds}
 
 \item{cell_size}{Size of each grid cell in whatever units you're using}
 

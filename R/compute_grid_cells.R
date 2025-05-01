@@ -18,7 +18,7 @@
 #' @return A data frame of predictors derived from the grid
 #' @export
 #'
-compute_grid_cells = function(lags = 0.15, data, cell_size = 0.25, max_vm = 3, sample_rate = NULL) {
+compute_grid_cells = function(data, lags, cell_size = 0.25, max_vm = 3, sample_rate = NULL) {
 
   # check that data is a data frame
   assertthat::assert_that(
@@ -62,6 +62,7 @@ compute_grid_cells = function(lags = 0.15, data, cell_size = 0.25, max_vm = 3, s
 
 
   # infer sample rate if not provided
+  # see if there's an attribute (if gt3x file)
   if(is.null(sample_rate)) {
     obs_per_sec =
       data %>%
@@ -100,7 +101,13 @@ compute_grid_cells = function(lags = 0.15, data, cell_size = 0.25, max_vm = 3, s
     dplyr::group_by(second) %>%
     dplyr::mutate(n = dplyr::n()) %>%
     dplyr::filter(n == sample_rate) %>%
-    dplyr::ungroup()
+    dplyr::ungroup() %>%
+    dplyr::mutate(
+      cut_sig = cut(
+        vm,
+        breaks = seq(0, max_vm, by = cell_size),
+        include.lowest = TRUE
+      ))
 
   assertthat::assert_that(
     nrow(data) > 0,
@@ -113,27 +120,13 @@ compute_grid_cells = function(lags = 0.15, data, cell_size = 0.25, max_vm = 3, s
             .f = function(lag){
               data %>%
                 dplyr::group_by(second) %>%
-                dplyr::select(vm, second) %>%
-                dplyr::mutate(lag_vm = dplyr::lag(vm, n = lag)) %>%   # for each second, calculate vm and lagged vm
-                dplyr::mutate(
-                  cut_sig = cut(
-                    vm,
-                    breaks = seq(0, max_vm, by = cell_size),
-                    include.lowest = TRUE
-                  ),
-                  cut_lagsig = cut(
-                    lag_vm,
-                    breaks = seq(0, max_vm, by = cell_size),
-                    include.lowest = TRUE
-                  )
-                ) %>%
-                tidyr::drop_na() %>% # count # points in each "grid cell"
-                dplyr::count(cut_sig, cut_lagsig, .drop = FALSE) %>%
-                dplyr::mutate(
-                  cell = paste0(cut_sig, "_", cut_lagsig, "_", lag)
-                ) %>%
+                dplyr::mutate(cut_lagsig = dplyr::lag(cut_sig, n = lag)) %>%   # for each second, calculate vm and lagged vm
                 dplyr::ungroup() %>%
+                tidyr::drop_na() %>% # count # points in each "grid cell"
+                dplyr::count(second, cut_sig, cut_lagsig, .drop = FALSE) %>%
+                dplyr::mutate(cell = paste0(cut_sig, "_", cut_lagsig, "_", lag)) %>%
                 dplyr::select(n, second, cell)
+
             })
   res =
     result %>%
