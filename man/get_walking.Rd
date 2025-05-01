@@ -27,6 +27,8 @@ get_walking(
 
 \item{sample_rate}{optional specification of sample rate (samples per sec), if not specified will be inferred}
 
+\item{template_list}{optional list of template with which to perform walking segmentation, if not specified will be all left wrist templates from adeptdata package}
+
 \item{parallel}{logical. If TRUE, will run in parallel using all available cores}
 
 \item{cores}{number of cores to use for parallel processing. If NULL and parallel is TRUE will use all available cores}
@@ -50,15 +52,9 @@ get_walking(
 \item{mean_abs_diff_med_t_max}{ADEPT parameter mean_abs_diff_med_t_MAX, default 0.2}
 
 \item{mean_abs_diff_dur_max}{ADEPT parameter mean_abs_diff_dur_MAX, default 0.3}
-
-\item{cell_size}{Size of each grid cell in whatever units you're using}
-
-\item{lags}{vector of lag values in seconds}
-
-\item{max_vm}{maximum vector magnitude for grid cells to be calculated on}
 }
 \value{
-A data frame of predictors derived from the grid
+A data frame of sub-second data from walking bouts only
 }
 \description{
 This function processes raw accelerometry data and creates predictors

@@ -13,5 +13,5 @@ testthat::test_that("compute_grid_cells returns correct structure", {
 
   expect_s3_class(result, "data.frame")
   expect_true("second" %in% names(result))
-  expect_gt(ncol(result), 1)
+  expect_gt(ncol(result), 3)
 })

@@ -14,12 +14,9 @@
 #'
 #' @param data A data frame with accelerometry values (e.g., x, y, z, and time)
 #' @param sample_rate optional specification of sample rate (samples per sec), if not specified will be inferred
+#' @param template_list optional list of template with which to perform walking segmentation, if not specified will be all left wrist templates from adeptdata package
 #' @param parallel logical. If TRUE, will run in parallel using all available cores
 #' @param cores number of cores to use for parallel processing. If NULL and parallel is TRUE will use all available cores
-
-#' @param cell_size Size of each grid cell in whatever units you're using
-#' @param lags vector of lag values in seconds
-#' @param max_vm maximum vector magnitude for grid cells to be calculated on
 #' @param sample_rate optional specification of sample rate (samples per sec), if not specified will be inferred
 #' @param sim_min ADEPT parameter sim_MIN, default 0.6
 #' @param dur_min ADEPT parameter dur_MIN, default 0.8
@@ -31,7 +28,7 @@
 #' @param mean_abs_diff_med_p_max ADEPT parameter mean_abs_diff_med_p_MAX, default 0.7
 #' @param mean_abs_diff_med_t_max ADEPT parameter mean_abs_diff_med_t_MAX, default 0.2
 #' @param mean_abs_diff_dur_max ADEPT parameter mean_abs_diff_dur_MAX, default 0.3
-#' @return A data frame of predictors derived from the grid
+#' @return A data frame of sub-second data from walking bouts only
 #' @export
 #'
 get_walking = function(data,
@@ -57,7 +54,10 @@ get_walking = function(data,
     msg = "Data must be a data frame."
   )
 
+  if(!is.null(cores)) cores = round(cores, 0)
   # make sure cores is number not sure how to do this exactly
+  assertthat::assert_that(is.null(cores) || is.numeric(cores),
+                          msg = "Cores must be NULL or numeric")
   # assertthat::assert_that(if(!is.null(cores)){is.numeric(cores)}, msg = "Cores must be NULL or numeric")
   # make column names lowercase
   colnames(data) <- tolower(colnames(data))
