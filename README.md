@@ -23,7 +23,7 @@ pak::pak("lilykoff/accelPrint")
 
 ## Example
 
-This is a basic example which shows you how to solve a common problem:
+This is a basic example which shows you how to use the package
 
 ``` r
 library(accelPrint)
@@ -53,8 +53,6 @@ fingerprint_predictors = compute_grid_cells(walking_bouts,
                                             lags = c(0.15, 0.30, 0.45), 
                                             cell_size = 0.25,
                                             max_vm = 3)
-#> Warning in rm(list = c("time", "x", "y", "z", "second", "vm", "second", :
-#> object 'second' not found
 #> Sample rate not provided. Inferred sample rate: 100 Hz
 
 head(fingerprint_predictors) 

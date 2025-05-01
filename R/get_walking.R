@@ -168,7 +168,8 @@ get_walking = function(data,
       steps = ifelse(is.na(steps), 0, steps),
       second = lubridate::floor_date(time, unit = "seconds")) %>%
     dplyr::group_by(second) %>%
-    dplyr::summarize(steps = sum(steps), .groups = "drop")
+    dplyr::summarize(steps = sum(steps), .groups = "drop") %>%
+    dplyr::filter(steps > 0)
 
   bouts = steps_bysecond %>%
     dplyr::select(second) %>%
@@ -185,7 +186,7 @@ get_walking = function(data,
     dplyr::filter(n_seconds >= 10) %>%
     dplyr::select(second, bout_seconds = n_seconds)
 
-  if(nrow(bouts) ==0){
+  if(nrow(bouts) == 0){
     message("No bouts of at least 10s in length detected")
     return(data.frame())
   }
