@@ -34,16 +34,31 @@ pak::pak("lilykoff/accelPrint")
 
 This is a basic example which shows you how to use the package
 
+### Get walking bouts from raw accelerometry data 
+
 ```{r example}
 library(accelPrint)
 library(ggplot2)
+library(dplyr)
 # load example data 
 data(raw_accel)
 # run the get walking function
 walking_bouts = accelPrint::get_walking(raw_accel, parallel = TRUE)
 head(walking_bouts) 
 
+walking_bouts %>% 
+  slice(1:(10 * 100)) %>% # take first 10 s 
+  mutate(vm = sqrt(x^2 + y^2 + z^2)) %>% # compute vector magnitude
+  ggplot(aes(x = time, y = vm)) + 
+  geom_line() + 
+  scale_x_datetime(date_labels = "%S") + 
+  labs(x = "Time (s)", y = "Vector magnitude (g)")
 
+```
+
+### Get fingerprint predictors from walking bouts 
+
+```{r}
 # run the get grid cells function on the walking bouts
 # specify lags of 0.15, 0.30, 0.45 seconds and grid cell size of 0.25g 
 fingerprint_predictors = compute_grid_cells(walking_bouts, 
@@ -52,5 +67,42 @@ fingerprint_predictors = compute_grid_cells(walking_bouts,
                                             max_vm = 3)
 
 head(fingerprint_predictors) 
+```
+
+
+```{r}
+# plot 
+fingerprint_predictors %>% 
+  tidyr::pivot_longer(cols = -second) %>% 
+  tidyr::separate_wider_delim(name, delim = "_", names = c("vm", "lag_vm", "lag")) %>% 
+  mutate(lag = paste0("Lag = ", as.numeric(lag)/100, " sec")) %>% 
+  mutate(vm = factor(vm, levels = c("[0,0.25]", "(0.25,0.5]", 
+                                   "(0.5,0.75]", "(0.75,1]", "(1,1.25]", "(1.25,1.5]", 
+                                   "(1.5,1.75]", "(1.75,2]", "(2,2.25]", "(2.25,2.5]", 
+                                   "(2.5,2.75]", "(2.75,3]")),
+         lag_vm = factor(lag_vm, levels = c("[0,0.25]", "(0.25,0.5]",
+                                            "(0.5,0.75]", "(0.75,1]", "(1,1.25]",
+                                            "(1.25,1.5]", "(1.5,1.75]", "(1.75,2]",
+                                            "(2,2.25]", "(2.25,2.5]", "(2.5,2.75]",
+                                            "(2.75,3]"))) %>% 
+  mutate(across(contains("vm"), as.numeric)) %>% 
+  ggplot() + 
+  geom_rect(aes(xmin = vm - 1, xmax = vm, ymin = lag_vm - 1, ymax = lag_vm, fill = value), color = "black") +
+  theme_classic() +
+  scale_x_continuous(
+    name = "Acceleration (g)",
+    breaks = seq(0, 12, by = 1),
+    labels = c("0", "0.25", "0.5", "0.75", "1", "1.25", "1.5", "1.75", "2", "2.25", "2.5", "2.75", "3"),
+    expand = c(0, 0)
+  ) + 
+  scale_y_continuous(
+    name = "Lag acceleration (g)",
+    breaks = seq(0, 12, by = 2),
+    labels = c("0", "0.5", "1", "1.5", "2", "2.5", "3"),
+    expand = c(0, 0)
+  ) + 
+  viridis::scale_fill_viridis(name = "Number of points in cell") + 
+  facet_grid(lag ~ .) +
+  theme(legend.position = "bottom")
 ```
 
