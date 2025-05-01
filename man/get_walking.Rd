@@ -65,6 +65,6 @@ using a grid-based approach with optional lagging.
 data(raw_accel)
 
 # Run the function
-res <- get_walking(raw_accel, parallel = TRUE)
+res <- get_walking(raw_accel, parallel = TRUE, cores = 2L)
 head(res)
 }
